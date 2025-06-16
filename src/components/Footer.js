@@ -23,14 +23,16 @@ function Footer() {
 					<div>
 						<h4 className="font-semibold mb-4">Connect</h4>
 						<div className="flex gap-6">
-							<Link href="#" aria-label="GitHub" className="text-gray-400 hover:text-white transition-colors">
+							<Link href="https://github.com/rhiaji" aria-label="GitHub" className="text-gray-400 hover:text-white transition-colors">
 								<Github className="w-5 h-5" />
 							</Link>
-							<Link href="#" aria-label="Twitter" className="text-gray-400 hover:text-white transition-colors">
+							<Link
+								href="https://x.com/MrLucky_Guy"
+								target="_blank"
+								aria-label="Twitter"
+								className="text-gray-400 hover:text-white transition-colors"
+							>
 								<Twitter className="w-5 h-5" />
-							</Link>
-							<Link href="#" aria-label="Email" className="text-gray-400 hover:text-white transition-colors">
-								<Mail className="w-5 h-5" />
 							</Link>
 						</div>
 					</div>

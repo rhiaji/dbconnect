@@ -79,7 +79,6 @@ export const AppProvider = ({ children }) => {
 	}
 
 	const createCollectionHandler = async (db, collectionName, collectionSchema) => {
-		console.log(`${SERVER_URL}/api/app/${collectionName}?db=${db}`)
 		try {
 			const res = await axios.post(
 				`${SERVER_URL}/api/app/${collectionName}?db=${db}`,
@@ -104,7 +103,6 @@ export const AppProvider = ({ children }) => {
 		try {
 			let request = { method, url, headers, data: { data } }
 
-			console.log(request)
 			// Axios request
 			const res = await axios(request)
 
