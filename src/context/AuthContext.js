@@ -62,6 +62,7 @@ export const AuthProvider = ({ children }) => {
 			if (response?.data?.token) {
 				// If successful, set the token and redirect to dashboard
 				Cookies.set('auth_token', response.data.token, { expires: 3 }) // Set token in cookies
+				toast.success('User logging in...')
 				router.push('/dashboard') // Redirect to dashboard
 			} else {
 				toast.error('Invalid credentials, please try again.') // If login fails, show error message

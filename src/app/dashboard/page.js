@@ -77,16 +77,16 @@ const AppDashboard = () => {
 		setShowRequestConfirmation(true)
 	}
 
-	// Update API URL to include objectId for DELETE or GET methods
 	const getApiUrl = () => {
 		// Start with the base URL
 		let url = `${SERVER_URL}/api/app/${selectedCollection}?db=${db}`
 
-		// If objectId is provided, append it to the URL as a query parameter
-		if (objectId) {
+		// Only add the objectId for GET or DELETE methods
+		if ((method === 'GET' || method === 'DELETE') && objectId) {
 			url += `&id=${objectId}`
 		}
-		// For other methods, use the base URL
+
+		// For other methods (POST/PUT), do not append objectId
 		if (useCustomUrl) {
 			return customApiUrl
 		}
