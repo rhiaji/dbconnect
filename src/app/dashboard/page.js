@@ -38,15 +38,8 @@ const AppDashboard = () => {
 	const [objectId, setObjectId] = useState('') // State to store the objectId
 
 	useEffect(() => {
-		if (userCollections) {
+		if (userCollections.length > 0) {
 			setSelectedCollection(userCollections[0]?.name)
-			const schema = userCollections[0]?.schema
-
-			if (schema) {
-				const mongooseString = transformToMongooseString(schema)
-
-				setCollectionSchema(mongooseString)
-			}
 		}
 	}, [userCollections])
 
@@ -72,6 +65,16 @@ const AppDashboard = () => {
 
 		return schemaString
 	}
+
+	// This effect runs whenever the selectedCollection changes
+	useEffect(() => {
+		const selectedCollectionData = userCollections.find((collection) => collection.name === selectedCollection)
+
+		if (selectedCollectionData && selectedCollectionData.schema) {
+			const mongooseString = transformToMongooseString(selectedCollectionData.schema)
+			setCollectionSchema(mongooseString)
+		}
+	}, [selectedCollection, userCollections]) // Runs when selectedCollection changes
 
 	const handleSendRequest = () => {
 		setShowRequestConfirmation(true)
