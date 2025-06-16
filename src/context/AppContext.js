@@ -40,7 +40,7 @@ export const AppProvider = ({ children }) => {
 				headers: { 'x-auth-token': authToken },
 			})
 
-			setUserCollections(res.data.data)
+			setUserCollections(res.data.data.data)
 		} catch (err) {
 			toast.error('Error fetching collections.')
 			console.error('Error fetching collections:', err)
@@ -57,9 +57,9 @@ export const AppProvider = ({ children }) => {
 				headers: { 'x-auth-token': authToken },
 			})
 
-			const user = res.data.data
+			const user = res.data.data.data
 
-			if (user) {
+			if (res.data.success) {
 				await fetchUserCollections(user.db)
 				setUserState(user)
 			} else {
@@ -78,22 +78,25 @@ export const AppProvider = ({ children }) => {
 		}
 	}
 
+	// Create Collection Handler
 	const createCollectionHandler = async (db, collectionName, collectionSchema) => {
-		try {
-			const res = await axios.post(
-				`${SERVER_URL}/api/app/${collectionName}?db=${db}`,
-				{ collectionSchema },
-				{ headers: { 'Content-Type': 'application/json' } }
-			)
+		// Create a promise that resolves when the API call succeeds or fails
+		const promise = axios.post(
+			`${SERVER_URL}/api/app/${collectionName}?db=${db}`,
+			{ collectionSchema },
+			{ headers: { 'Content-Type': 'application/json' } }
+		)
 
-			if (res.status === 200) {
-				toast.success('Collection created successfully.')
-				await fetchUserData()
-			}
-		} catch (err) {
-			toast.error('Error creating collection.')
-			console.error('Error creating collection:', err)
-		}
+		// Show a loading toast during the request
+		toast.promise(promise, {
+			loading: 'Creating collection...',
+			success: () => {
+				// On success, show success toast and refetch user data
+				fetchUserData()
+				return 'Collection created successfully.'
+			},
+			error: 'Error creating collection.',
+		})
 	}
 
 	// Perform the action (e.g., add, update, delete tasks)

@@ -35,7 +35,7 @@ const AppDashboard = () => {
 	const [useCustomUrl, setUseCustomUrl] = useState(false)
 	const [showCreateCollectionModal, setShowCreateCollectionModal] = useState(false)
 	const [showRequestConfirmation, setShowRequestConfirmation] = useState(false)
-	const [objectId, setObjectId] = useState('') // State to store the objectId
+	const [objectId, setObjectId] = useState('')
 
 	useEffect(() => {
 		if (userCollections.length > 0) {
@@ -85,7 +85,7 @@ const AppDashboard = () => {
 		let url = `${SERVER_URL}/api/app/${selectedCollection}?db=${db}`
 
 		// Only add the objectId for GET or DELETE methods
-		if ((method === 'GET' || method === 'DELETE') && objectId) {
+		if ((method === 'GET' || method === 'DELETE' || method === 'PUT') && objectId) {
 			url += `&id=${objectId}`
 		}
 
@@ -242,7 +242,7 @@ const AppDashboard = () => {
 										</div>
 									</div>
 
-									{(method === 'GET' || method === 'DELETE') && (
+									{(method === 'GET' || method === 'DELETE' || method === 'PUT') && (
 										<div>
 											<label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Object ID</label>
 											<Input

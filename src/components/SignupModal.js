@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -23,6 +24,7 @@ const SignupModal = ({ isOpen, onClose, onLogin }) => {
 	}
 
 	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState('') // Error state for password validation
 
 	if (!isOpen) return null
 
@@ -37,10 +39,19 @@ const SignupModal = ({ isOpen, onClose, onLogin }) => {
 	const handleSubmit = async (e) => {
 		e.preventDefault()
 		setLoading(true)
+
+		// Password validation: must be at least 8 characters long
+		if (formData.password.length < 8) {
+			setError('Password must be at least 8 characters long.')
+			setLoading(false)
+			return
+		}
+
 		try {
-			// Call the signUpHandler to handle the signup logic, or simulate it
+			// Call the signUpHandler to handle the signup logic
 			await signUpHandler(formData.username, formData.email, formData.password)
 			resetFormData()
+			setError('') // Clear any previous errors
 		} catch (error) {
 			console.error('Signup failed:', error)
 		} finally {
@@ -56,6 +67,7 @@ const SignupModal = ({ isOpen, onClose, onLogin }) => {
 				</DialogHeader>
 				<div className="space-y-4">
 					<form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+						{/* Username Field */}
 						<label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Username</label>
 						<Input
 							type="text"
@@ -66,6 +78,7 @@ const SignupModal = ({ isOpen, onClose, onLogin }) => {
 							placeholder="Enter your username"
 						/>
 
+						{/* Email Field */}
 						<label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
 						<Input
 							type="email"
@@ -76,6 +89,7 @@ const SignupModal = ({ isOpen, onClose, onLogin }) => {
 							placeholder="Enter your email"
 						/>
 
+						{/* Password Field */}
 						<label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
 						<Input
 							type="password"
@@ -85,7 +99,10 @@ const SignupModal = ({ isOpen, onClose, onLogin }) => {
 							required
 							placeholder="Create a password"
 						/>
+						{/* Display password length error if any */}
+						{error && <p className="text-red-600 text-sm">{error}</p>}
 
+						{/* Sign Up Button */}
 						<Button
 							type="submit"
 							className="w-full mt-4 rounded-lg bg-green-600 text-lg font-semibold text-white py-2 shadow hover:bg-green-700 transition-colors"

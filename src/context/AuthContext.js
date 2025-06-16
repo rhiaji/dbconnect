@@ -19,21 +19,17 @@ export const useAuth = () => {
 	return context
 }
 
+const authToken = Cookies.get('auth_token')
+
 // Helper function to handle API requests and show toast notifications
 const handleRequest = async (method, url, data) => {
 	try {
 		const response = await axios({
 			method,
 			url,
-			headers: { 'Content-Type': 'application/json' },
+			headers: { 'x-auth-token': authToken },
 			data,
 		})
-
-		// If response contains a token, set cookie and return response data
-		if (response?.data?.token) {
-			Cookies.set('auth_token', response.data.token, { expires: 3 })
-			return response // Return the response for further processing
-		}
 
 		// Handle other success cases
 		toast.success(response.data.message || 'Success')
@@ -57,12 +53,11 @@ export const AuthProvider = ({ children }) => {
 			const payload = await encryptPayload({ username, password }, JWT_SECRET)
 
 			// Send the login request
-			const response = await handleRequest('POST', `${SERVER_URL}/api/user/login`, { request: payload })
+			const response = await handleRequest('POST', `${SERVER_URL}/api/user/login`, { data: payload })
 
-			if (response?.data?.token) {
+			if (response?.data?.data.token) {
 				// If successful, set the token and redirect to dashboard
-				Cookies.set('auth_token', response.data.token, { expires: 3 }) // Set token in cookies
-				toast.success('User logging in...')
+				Cookies.set('auth_token', response.data.data.token, { expires: 3 }) // Set token in cookies
 				router.push('/dashboard') // Redirect to dashboard
 			} else {
 				toast.error('Invalid credentials, please try again.') // If login fails, show error message
@@ -83,16 +78,13 @@ export const AuthProvider = ({ children }) => {
 			const payload = await encryptPayload({ username, email, password }, JWT_SECRET)
 
 			// Send the sign-up request
-			const response = await handleRequest('POST', `${SERVER_URL}/api/user/signup`, { request: payload })
+			const response = await handleRequest('POST', `${SERVER_URL}/api/user/signup`, { data: payload })
 
 			// If sign-up is successful, proceed to log in
-			if (response?.data?.message === 'User created successfully') {
-				toast.success('User created successfully, logging in...')
 
+			if (response?.data?.success) {
 				// Automatically log the user in
 				await logInHandler(username, password) // Call the login handler here
-			} else {
-				toast.error('Failed to create user. Please try again.')
 			}
 		} catch (error) {
 			toast.error(`Sign-up failed: ${error?.message || 'Something went wrong'}`)
@@ -101,5 +93,53 @@ export const AuthProvider = ({ children }) => {
 		setLoading(false) // Stop loading regardless of success or failure
 	}
 
-	return <AuthContext.Provider value={{ logInHandler, signUpHandler, loading }}>{children}</AuthContext.Provider>
+	// Update user settings (username, email, db, apiKey, secretKey)
+	const updateUser = async (settings) => {
+		setLoading(true)
+		try {
+			await handleRequest('PUT', `${SERVER_URL}/api/user/update`, { data: settings })
+		} catch (error) {
+			toast.error('Error updating user settings.')
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	// Change password
+	const changePassword = async (oldPassword, newPassword) => {
+		setLoading(true)
+		try {
+			await handleRequest('PUT', `${SERVER_URL}/api/user/change-password`, { data: { oldPassword, newPassword } })
+		} catch (error) {
+			toast.error('Error changing password.')
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	// Delete user
+	const deleteUser = async () => {
+		setLoading(true)
+		try {
+			// Make the delete request to the server
+			const response = await handleRequest('DELETE', `${SERVER_URL}/api/user/delete`, {})
+
+			// If the request is successful, clear the user's authentication data
+			if (response.data.success) {
+				Cookies.remove('auth_token') // Clear the authentication cookie
+				localStorage.clear() // Clear local storage data
+				router.push('/') // Redirect the user to the homepage or login page
+			}
+		} catch (error) {
+			toast.error('Error deleting user account.')
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	return (
+		<AuthContext.Provider value={{ logInHandler, signUpHandler, updateUser, changePassword, deleteUser, loading }}>
+			{children}
+		</AuthContext.Provider>
+	)
 }
