@@ -14,7 +14,13 @@ const SignupModal = ({ isOpen, onClose, onLogin }) => {
 		password: '',
 	})
 
-	const [loading, setLoading] = useState(false)
+	const resetFormData = () => {
+		setFormData({
+			email: '',
+			username: '',
+			password: '',
+		})
+	}
 
 	if (!isOpen) return null
 
@@ -28,15 +34,13 @@ const SignupModal = ({ isOpen, onClose, onLogin }) => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
-		setLoading(true)
+
 		try {
 			// Call the signUpHandler to handle the signup logic, or simulate it
 			await signUpHandler(formData.username, formData.email, formData.password)
+			resetFormData()
 		} catch (error) {
 			console.error('Signup failed:', error)
-		} finally {
-			setLoading(false)
-			// onLogin()
 		}
 	}
 

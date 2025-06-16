@@ -23,16 +23,12 @@ const LoginModal = ({ isOpen, onClose, onSignup }) => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
-		setLoading(true)
+
 		try {
 			// Call the logInHandler with formData values
 			await logInHandler(formData.username, formData.password)
 		} catch (error) {
 			console.error('Login failed:', error)
-		} finally {
-			setLoading(false)
-			// Optionally, redirect or close the modal here
-			router.push('/dashboard')
 		}
 	}
 

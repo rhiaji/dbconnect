@@ -1,8 +1,15 @@
 import { LogOut, Home, Settings, Database } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import Cookies from 'js-cookie'
 
 const Navigation = ({ onSidebarToggle }) => {
 	const router = useRouter()
+
+	const handleLogout = () => {
+		localStorage.clear()
+		Cookies.remove('auth_token')
+		router.push('/')
+	}
 
 	return (
 		<nav className="h-16 bg-white dark:bg-gray-950 shadow-sm flex items-center px-4 sm:px-8 justify-between z-20 border-b border-gray-100 dark:border-gray-800 font-sans">
@@ -43,7 +50,7 @@ const Navigation = ({ onSidebarToggle }) => {
 				</button>
 				<button
 					className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900 rounded-lg hover:bg-gray-200 hover:dark:bg-gray-800 transition-colors font-medium text-gray-700 dark:text-gray-200"
-					onClick={() => router.push('/')}
+					onClick={handleLogout}
 				>
 					<LogOut size={18} />
 					<span className="hidden sm:inline">Logout</span>
