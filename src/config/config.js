@@ -1,0 +1,2 @@
+export const SERVER_URL = process.env.NEXT_PUBLIC_API // NEXT_PUBLIC_API ro NEXT_PUBLIC_API_LOCAL
+export const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET

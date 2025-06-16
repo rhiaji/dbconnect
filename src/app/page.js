@@ -1,103 +1,153 @@
-import Image from "next/image";
+'use client'
+import React, { useState } from 'react'
+import LoginModal from '@/components/LoginModal'
+import SignupModal from '@/components/SignupModal'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { Database, Shield, Zap, Code, Github, Twitter, Mail } from 'lucide-react'
+import Footer from '@/components/Footer'
+import Cookies from 'js-cookie'
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+const Index = () => {
+	const [showLogin, setShowLogin] = useState(false)
+	const [showSignup, setShowSignup] = useState(false)
+	const router = useRouter()
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+	const auth = Cookies.get('auth_token')
+
+	const handleScrollToSection = (sectionId) => {
+		const section = document.getElementById(sectionId)
+		if (section) {
+			section.scrollIntoView({ behavior: 'smooth' })
+		}
+	}
+
+	return (
+		<div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex flex-col font-sans">
+			{/* Header */}
+			<header className="w-full bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-10">
+				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+					<div className="flex justify-between items-center py-4">
+						<div className="flex items-center gap-3">
+							<div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+								<Database className="w-5 h-5 text-white" />
+							</div>
+							<span className="text-xl font-bold text-gray-900">dbConnect</span>
+						</div>
+						<nav className="hidden md:flex items-center gap-8">
+							<button onClick={() => handleScrollToSection('features')} className="text-gray-600 hover:text-gray-900 transition-colors">
+								Features
+							</button>
+							<button onClick={() => handleScrollToSection('about')} className="text-gray-600 hover:text-gray-900 transition-colors">
+								About
+							</button>
+							<div className="flex gap-3">
+								<button
+									className="text-gray-600 hover:text-gray-900 transition-colors font-medium"
+									onClick={() => {
+										if (auth) {
+											router.push('/dashboard')
+										} else {
+											setShowLogin(true)
+										}
+									}}
+								>
+									Log In
+								</button>
+								<button
+									className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+									onClick={() => setShowSignup(true)}
+								>
+									Sign Up
+								</button>
+							</div>
+						</nav>
+					</div>
+				</div>
+			</header>
+
+			{/* Hero Section */}
+			<main className="flex-1">
+				<section className="py-20 px-4">
+					<div className="max-w-4xl mx-auto text-center">
+						<h1 className="text-5xl sm:text-7xl font-extrabold text-gray-900 mb-6 animate-fade-in">
+							Build MongoDB APIs
+							<span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Effortlessly</span>
+						</h1>
+						<p className="text-xl sm:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto animate-fade-in">
+							Create, test, and manage MongoDB-powered APIs with our intuitive visual interface. No complex setup required.
+						</p>
+						<div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+							<button
+								className="bg-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-blue-700 transition-all hover:scale-105 shadow-lg"
+								onClick={() => setShowSignup(true)}
+							>
+								Get Started Free
+							</button>
+						</div>
+					</div>
+				</section>
+
+				{/* Features Section */}
+				<section id="features" className="py-20 bg-white">
+					<div className="max-w-6xl mx-auto px-4">
+						<h2 className="text-4xl font-bold text-center text-gray-900 mb-16">Everything you need to build APIs</h2>
+						<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+							<div className="text-center group">
+								<div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors">
+									<Database className="w-8 h-8 text-blue-600" />
+								</div>
+								<h3 className="text-xl font-semibold text-gray-900 mb-2">MongoDB Collections</h3>
+								<p className="text-gray-600">Create and manage collections with an intuitive interface</p>
+							</div>
+							<div className="text-center group">
+								<div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
+									<Code className="w-8 h-8 text-green-600" />
+								</div>
+								<h3 className="text-xl font-semibold text-gray-900 mb-2">HTTP Methods</h3>
+								<p className="text-gray-600">Support for GET, POST, PUT, DELETE operations</p>
+							</div>
+							<div className="text-center group">
+								<div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-200 transition-colors">
+									<Shield className="w-8 h-8 text-purple-600" />
+								</div>
+								<h3 className="text-xl font-semibold text-gray-900 mb-2">JWT & Encryption</h3>
+								<p className="text-gray-600">Built-in authentication and request encryption</p>
+							</div>
+							<div className="text-center group">
+								<div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-200 transition-colors">
+									<Zap className="w-8 h-8 text-orange-600" />
+								</div>
+								<h3 className="text-xl font-semibold text-gray-900 mb-2">Real-time Testing</h3>
+								<p className="text-gray-600">Test your APIs instantly with formatted responses</p>
+							</div>
+						</div>
+					</div>
+				</section>
+			</main>
+
+			{/* Footer Section */}
+			<Footer />
+
+			{/* Modals */}
+			<LoginModal
+				isOpen={showLogin}
+				onClose={() => setShowLogin(false)}
+				onSignup={() => {
+					setShowLogin(false)
+					setShowSignup(true)
+				}}
+			/>
+			<SignupModal
+				isOpen={showSignup}
+				onClose={() => setShowSignup(false)}
+				onLogin={() => {
+					setShowSignup(false)
+					setShowLogin(true)
+				}}
+			/>
+		</div>
+	)
 }
+
+export default Index
