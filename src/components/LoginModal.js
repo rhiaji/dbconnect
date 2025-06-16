@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { useRouter } from 'next/navigation'
 
 import { useAuth } from '@/context/AuthContext'
+import { FlagTriangleLeft } from 'lucide-react'
 
 const LoginModal = ({ isOpen, onClose, onSignup }) => {
 	const { logInHandler } = useAuth()
@@ -23,12 +24,14 @@ const LoginModal = ({ isOpen, onClose, onSignup }) => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
-
+		setLoading(true)
 		try {
 			// Call the logInHandler with formData values
 			await logInHandler(formData.username, formData.password)
 		} catch (error) {
 			console.error('Login failed:', error)
+		} finally {
+			setLoading(false)
 		}
 	}
 
