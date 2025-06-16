@@ -69,10 +69,12 @@ const Index = () => {
 			<main className="flex-1">
 				<section className="py-20 px-4">
 					<div className="max-w-4xl mx-auto text-center">
-						<h1 className="text-5xl sm:text-7xl font-extrabold text-gray-900 mb-6 animate-fade-in">Manage MongoDB Database</h1>
+						<h1 className="text-5xl sm:text-7xl font-extrabold text-gray-900 mb-6 animate-fade-in">
+							Manage MongoDB Databases
+							<span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Effortlessly</span>
+						</h1>
 						<p className="text-xl sm:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto animate-fade-in">
-							Easily create and manage MongoDB databases and collections with no complex setup. Our platform automatically generates
-							APIs for you to interact with your data through simple GET, POST, PUT, and DELETE operations.
+							Easily create and manage MongoDB databases and collections. APIs are auto-generated for seamless data interaction.
 						</p>
 						<div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
 							<button
