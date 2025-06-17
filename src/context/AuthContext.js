@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { SERVER_URL, JWT_SECRET } from '@/config/config'
 import { encryptPayload } from '@/utils/encryptPayload'
 import { useRouter } from 'next/navigation'
+import { useApp } from './AppContext'
 
 // Create a context for authentication management
 const AuthContext = createContext(undefined)
@@ -32,7 +33,7 @@ const handleRequest = async (method, url, data) => {
 		})
 
 		// Handle other success cases
-		toast.success(response.data.message || 'Success')
+		toast('Success', { description: response.data.message })
 		return response // Return the response for further processing
 	} catch (error) {
 		toast.error(`Error: ${error.response?.data?.message || 'Something went wrong.'}`)
@@ -137,8 +138,20 @@ export const AuthProvider = ({ children }) => {
 		}
 	}
 
+	const requestAuthKey = async () => {
+		setLoading(true)
+		try {
+			// Make the delete request to the server
+			await handleRequest('PUT', `${SERVER_URL}/api/user/auth-key`, {})
+		} catch (error) {
+			toast.error('Error requesting api key.')
+		} finally {
+			setLoading(false)
+		}
+	}
+
 	return (
-		<AuthContext.Provider value={{ logInHandler, signUpHandler, updateUser, changePassword, deleteUser, loading }}>
+		<AuthContext.Provider value={{ logInHandler, signUpHandler, updateUser, changePassword, deleteUser, requestAuthKey, loading }}>
 			{children}
 		</AuthContext.Provider>
 	)

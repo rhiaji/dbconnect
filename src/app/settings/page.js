@@ -23,8 +23,8 @@ const Settings = () => {
 		username: '',
 		email: '',
 		db: 'dbconnect1',
-		apiKey: '••••••••••••••••',
-		secretKey: '••••••••••••••••••••••••••••••••',
+		authorizationKey: '',
+		secretKey: '',
 	})
 	const [initialSettings, setInitialSettings] = useState(settings) // Store initial settings
 	const [passwordData, setPasswordData] = useState({
@@ -34,8 +34,8 @@ const Settings = () => {
 	})
 
 	const { theme, toggleTheme } = useTheme() // Use the theme from ThemeContext
-	const { updateUser, changePassword, deleteUser } = useAuth() // Use AuthContext for authentication-related actions
-	const { userState, username, email, db, apiKey, secretKey } = useApp()
+	const { updateUser, changePassword, deleteUser, requestAuthKey } = useAuth() // Use AuthContext for authentication-related actions
+	const { userState, username, email, db, authorizationKey, secretKey, fetchUserData } = useApp()
 
 	useEffect(() => {
 		if (userState) {
@@ -43,15 +43,15 @@ const Settings = () => {
 				username: username,
 				email: email,
 				db: db,
-				apiKey: apiKey || '••••••••••••••••',
-				secretKey: secretKey || '••••••••••••••••••••••••••••••••',
+				authorizationKey: authorizationKey,
+				secretKey: secretKey,
 			})
 			setInitialSettings({
 				username: username,
 				email: email,
 				db: db,
-				apiKey: apiKey || '••••••••••••••••',
-				secretKey: secretKey || '••••••••••••••••••••••••••••••••',
+				authorizationKey: authorizationKey,
+				secretKey: secretKey,
 			}) // Update initial settings with current values
 		}
 	}, [userState])
@@ -59,12 +59,9 @@ const Settings = () => {
 	// Handle save for user settings update
 	const handleSave = async () => {
 		if (JSON.stringify(settings) !== JSON.stringify(initialSettings)) {
-			try {
-				await updateUser(settings) // Update user settings
-				setInitialSettings(settings) // Update initial settings after saving
-			} catch (error) {
-				toast.error('Error saving settings.')
-			}
+			await updateUser(settings) // Update user settings
+			fetchUserData()
+			setInitialSettings(settings) // Update initial settings after saving
 		} else {
 			toast.info('No changes detected.')
 		}
@@ -82,28 +79,25 @@ const Settings = () => {
 			return
 		}
 
-		try {
-			await changePassword(passwordData.oldPassword, passwordData.newPassword)
-			setPasswordData({
-				oldPassword: '',
-				newPassword: '',
-				confirmPassword: '',
-			})
-		} catch (error) {
-			toast.error('Error changing password.')
-		}
+		await changePassword(passwordData.oldPassword, passwordData.newPassword)
+		fetchUserData()
+		setPasswordData({
+			oldPassword: '',
+			newPassword: '',
+			confirmPassword: '',
+		})
 	}
 
 	// Handle delete user action
 	const handleDeleteUser = async () => {
-		const confirmDelete = window.confirm('Are you sure you want to delete your account? This action cannot be undone.')
-		if (confirmDelete) {
-			try {
-				await deleteUser() // Call deleteUser from context
-			} catch (error) {
-				toast.error('Error deleting account.')
-			}
-		}
+		toast.warning('Deleting Account!', {
+			description: 'Are you sure you want to delete your account? This action cannot be undone.',
+			duration: 5000,
+			action: {
+				label: 'Confirm',
+				onClick: () => deleteUser(),
+			},
+		})
 	}
 
 	// Generate new secret key for encryption
@@ -111,7 +105,7 @@ const Settings = () => {
 		const newSecretKey = Array.from(crypto.getRandomValues(new Uint8Array(32)), (byte) => byte.toString(16).padStart(2, '0')).join('')
 		setSettings({ ...settings, secretKey: newSecretKey })
 		toast('Secret key generated', {
-			description: 'A new secret key has been generated for encryption.',
+			description: 'A new secret key has been generated for encryption please save changes.',
 		})
 	}
 
@@ -366,10 +360,22 @@ const Settings = () => {
 												<div>
 													<label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">API Key</label>
 													<div className="flex gap-3">
-														<Input type="password" value={settings.apiKey} className="flex-1 max-w-md" readOnly />
-														<Button variant="outline">
+														<Input
+															type="text"
+															value={settings.authorizationKey}
+															className="flex-1 max-w-md"
+															placeholder="Request your authorization key"
+															readOnly
+														/>
+														<Button
+															variant="outline"
+															onClick={async () => {
+																await requestAuthKey()
+																fetchUserData()
+															}}
+														>
 															<Database className="w-4 h-4 mr-2" />
-															Regenerate
+															Request key
 														</Button>
 													</div>
 												</div>
@@ -409,7 +415,13 @@ const Settings = () => {
 												{/* Danger Zone */}
 												<div className="border-t border-gray-200 dark:border-gray-700 pt-6 mt-8">
 													<h3 className="text-lg font-medium text-red-600 dark:text-red-400 mb-4">Danger Zone</h3>
-													<Button variant="destructive" onClick={handleDeleteUser}>
+													<Button
+														variant="destructive"
+														onClick={async () => {
+															await handleDeleteUser()
+															fetchUserData()
+														}}
+													>
 														<Trash2 className="w-4 h-4 mr-2" />
 														Delete Account
 													</Button>

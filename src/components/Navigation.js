@@ -1,4 +1,4 @@
-import { LogOut, Home, Settings, Database } from 'lucide-react'
+import { LogOut, Home, Settings, Database, FileText } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
 

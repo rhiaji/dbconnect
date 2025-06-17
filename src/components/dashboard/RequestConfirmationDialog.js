@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { useApp } from '@/context/AppContext'
 
-const RequestConfirmationDialog = ({ isOpen, onClose, method, headers = [], url, data, encrypt }) => {
+const RequestConfirmationDialog = ({ isOpen, onClose, method, headers = [], url, data, encrypt, encryptedData }) => {
 	const { confirmHandler } = useApp()
 
 	// Function to transform headers to an object with enabled headers only
@@ -32,7 +32,7 @@ const RequestConfirmationDialog = ({ isOpen, onClose, method, headers = [], url,
 		let dataPreview = data
 
 		if (encrypt) {
-			dataPreview = { request: encrypt }
+			dataPreview = encryptedData
 		}
 
 		const apiRequest1 = {
@@ -45,7 +45,7 @@ const RequestConfirmationDialog = ({ isOpen, onClose, method, headers = [], url,
 			method,
 			url,
 			headers: transformHeadersToObject(headers),
-			data: { data: dataPreview },
+			data: { encrypted: encrypt, data: dataPreview },
 		}
 
 		if (method === 'GET' || method === 'DELETE') {
@@ -59,7 +59,11 @@ const RequestConfirmationDialog = ({ isOpen, onClose, method, headers = [], url,
 		const transformedHeaders = transformHeadersToObject(headers)
 
 		try {
-			await confirmHandler(method, url, transformedHeaders, data)
+			if (encrypt) {
+				await confirmHandler(method, url, transformedHeaders, { encrypted: encrypt, data: encryptedData })
+			} else {
+				await confirmHandler(method, url, transformedHeaders, { encrypted: encrypt, data })
+			}
 		} catch (err) {
 			console.error('Error:', err)
 		}

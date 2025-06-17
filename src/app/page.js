@@ -40,6 +40,9 @@ const Index = () => {
 							<button onClick={() => handleScrollToSection('about')} className="text-gray-600 hover:text-gray-900 transition-colors">
 								About
 							</button>
+							<button className="text-gray-600 hover:text-gray-900 transition-colors" onClick={() => router.push('/settings')}>
+								Documentation
+							</button>
 							<div className="flex gap-3">
 								<button
 									className="text-gray-600 hover:text-gray-900 transition-colors font-medium"

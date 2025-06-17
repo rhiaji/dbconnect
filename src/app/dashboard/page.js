@@ -9,8 +9,9 @@ import { Send, Lock, Database, ChevronDown, Plus, Trash2 } from 'lucide-react'
 import Navigation from '@/components/Navigation'
 import CreateCollectionModal from '@/components/dashboard/CreateCollectionModal'
 import RequestConfirmationDialog from '@/components/dashboard/RequestConfirmationDialog'
-import { encryptedData } from '@/utils/encryptPayload'
+import { encryptData } from '@/utils/encryptPayload'
 import { useRouter } from 'next/navigation'
+import Cookies from 'js-cookie'
 import { useApp } from '@/context/AppContext'
 import { SERVER_URL } from '@/config/config'
 
@@ -20,7 +21,8 @@ import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import ProtectedRoute from '@/hooks/ProtectedRoute'
 
 const AppDashboard = () => {
-	const { userCollections = [], db, response } = useApp()
+	const authToken = Cookies.get('auth_token')
+	const { userCollections = [], db, response, secretKey } = useApp()
 	const router = useRouter()
 	const [selectedCollection, setSelectedCollection] = useState('')
 	const [method, setMethod] = useState('GET')
@@ -29,8 +31,11 @@ const AppDashboard = () => {
 	const [useHeaders, setUseHeaders] = useState(false)
 	const [showSchema, setShowSchema] = useState(false)
 	const [collectionSchema, setCollectionSchema] = useState({})
-	const [headers, setHeaders] = useState([{ key: 'Content-Type', value: 'application/json', enabled: true }])
-	const [encryptedRequest, setEncryptedRequest] = useState()
+	const [headers, setHeaders] = useState([
+		{ key: 'Content-Type', value: 'application/json', enabled: true },
+		{ key: 'x-auth-token', value: authToken, enabled: true },
+	])
+	const [encryptedData, setEncryptedData] = useState()
 	const [customApiUrl, setCustomApiUrl] = useState('')
 	const [useCustomUrl, setUseCustomUrl] = useState(false)
 	const [showCreateCollectionModal, setShowCreateCollectionModal] = useState(false)
@@ -76,7 +81,17 @@ const AppDashboard = () => {
 		}
 	}, [selectedCollection, userCollections]) // Runs when selectedCollection changes
 
-	const handleSendRequest = () => {
+	const handleSendRequest = async () => {
+		// First, get the request data (parsed JSON or raw body)
+		const requestData = getRequestData()
+
+		if (encrypt) {
+			// If encryption is enabled, encrypt the data before sending
+			const encryptedData = await encryptData(requestData, secretKey, router)
+			setEncryptedData(encryptedData) // Store the encrypted data in the state (optional for display or use)
+		}
+
+		// Continue with the rest of the logic, like opening the confirmation dialog
 		setShowRequestConfirmation(true)
 	}
 
@@ -346,16 +361,6 @@ const AppDashboard = () => {
 											Send Request
 										</Button>
 									</div>
-
-									{/* Encrypted Request Output */}
-									{encryptedRequest && (
-										<div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-											<h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">Encrypted Request</h4>
-											<pre className="text-xs text-yellow-700 dark:text-yellow-300 font-mono break-all whitespace-pre-wrap">
-												{encryptedRequest}
-											</pre>
-										</div>
-									)}
 								</CardContent>
 							</Card>
 
@@ -411,6 +416,7 @@ const AppDashboard = () => {
 					url={getApiUrl()}
 					data={getRequestData()}
 					encrypt={encrypt}
+					encryptedData={encryptedData}
 				/>
 			</div>
 		</ProtectedRoute>

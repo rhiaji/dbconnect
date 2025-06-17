@@ -80,23 +80,25 @@ export const AppProvider = ({ children }) => {
 
 	// Create Collection Handler
 	const createCollectionHandler = async (db, collectionName, collectionSchema) => {
-		// Create a promise that resolves when the API call succeeds or fails
-		const promise = axios.post(
-			`${SERVER_URL}/api/app/${collectionName}?db=${db}`,
-			{ collectionSchema },
-			{ headers: { 'Content-Type': 'application/json' } }
-		)
+		setLoading(true)
 
-		// Show a loading toast during the request
-		toast.promise(promise, {
-			loading: 'Creating collection...',
-			success: () => {
-				// On success, show success toast and refetch user data
-				fetchUserData()
-				return 'Collection created successfully.'
-			},
-			error: 'Error creating collection.',
-		})
+		try {
+			const res = await axios.post(
+				`${SERVER_URL}/api/app/${collectionName}?db=${db}`,
+				{ collectionSchema },
+				{ headers: { 'Content-Type': 'application/json', 'x-auth-token': authToken } }
+			)
+
+			const json = res.data
+
+			await fetchUserData()
+
+			toast('Collection Created!', { description: json.message }) // Success toast
+		} catch (err) {
+			toast.error(err.response?.data?.message || 'Action failed') // Error toast
+		} finally {
+			setLoading(false)
+		}
 	}
 
 	// Perform the action (e.g., add, update, delete tasks)
@@ -114,7 +116,8 @@ export const AppProvider = ({ children }) => {
 			await fetchUserData()
 
 			setResponse(JSON.stringify(json.data, null, 2))
-			toast.success(json.message || 'Action succeeded') // Success toast
+
+			toast(`Success ${method} request`, { description: json.message }) // Success toast
 		} catch (err) {
 			toast.error(err.response?.data?.message || 'Action failed') // Error toast
 		} finally {
@@ -127,7 +130,9 @@ export const AppProvider = ({ children }) => {
 	}
 
 	return (
-		<AppContext.Provider value={{ ...userState, userState, userCollections, confirmHandler, createCollectionHandler, response, loading }}>
+		<AppContext.Provider
+			value={{ ...userState, userState, userCollections, confirmHandler, createCollectionHandler, response, loading, fetchUserData }}
+		>
 			{children}
 		</AppContext.Provider>
 	)
