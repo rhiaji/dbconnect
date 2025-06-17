@@ -27,7 +27,7 @@ const Index = () => {
 			<header className="w-full bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-10">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="flex justify-between items-center py-4">
-						<div className="flex items-center gap-3">
+						<div className="flex items-center gap-3 cursor-pointer" onClick={() => router.push('/')}>
 							<div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
 								<Database className="w-5 h-5 text-white" />
 							</div>
@@ -40,7 +40,7 @@ const Index = () => {
 							<button onClick={() => handleScrollToSection('about')} className="text-gray-600 hover:text-gray-900 transition-colors">
 								About
 							</button>
-							<button className="text-gray-600 hover:text-gray-900 transition-colors" onClick={() => router.push('/settings')}>
+							<button className="text-gray-600 hover:text-gray-900 transition-colors" onClick={() => router.push('/docs')}>
 								Documentation
 							</button>
 							<div className="flex gap-3">

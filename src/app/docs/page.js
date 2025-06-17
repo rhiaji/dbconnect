@@ -9,8 +9,10 @@ import { codeExamples } from '@/utils/docs'
 import Footer from '@/components/Footer'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { useRouter } from 'next/navigation'
 
 const Docs = () => {
+	const router = useRouter()
 	const copyToClipboard = (text) => {
 		navigator.clipboard.writeText(text).then(() => {
 			toast('Copied to clipboard!')
@@ -70,8 +72,8 @@ const Docs = () => {
 			<header className="w-full bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-10">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="flex justify-between items-center py-4">
-						<div className="flex items-center gap-3">
-							<div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+						<div className="flex items-center gap-3 cursor-pointer" onClick={() => router.push('/')}>
+							<div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center ">
 								<Database className="w-5 h-5 text-white" />
 							</div>
 							<span className="text-xl font-bold text-gray-900">dbConnect</span>
